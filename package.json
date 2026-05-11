@@ -9,7 +9,10 @@
     "format": "prettier --write .",
     "build": "tsc",
     "start": "node dist/index.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:push": "pnpm drizzle-kit push",
+    "db:generate": "pnpm drizzle-kit generate",
+    "db:migrate": "pnpm drizzle-kit migrate"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css,md,html,mjs}": "prettier --write"
@@ -21,13 +24,17 @@
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.4",
     "nodemon": "^3.1.14",
