@@ -6,6 +6,7 @@ import { ApiError } from '../errors.js'
 import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { verifyRefreshToken } from '../middleware/auth.js'
 
 export const authRouter: Router = Router()
 
@@ -114,35 +115,18 @@ authRouter.post(
 
 authRouter.post(
   '/refresh',
+  verifyRefreshToken,
   withErrorHandler(async (req: Request, res: Response) => {
-    const refreshToken = req.cookies.refreshToken
+    const userId = req.userId!
 
-    if (!refreshToken) {
-      throw new ApiError('UNAUTHORIZED', 401)
-    }
-
-    const existingRefreshToken = await RefreshTokenRepository.getByToken(refreshToken)
-
-    if (!existingRefreshToken) {
-      throw new ApiError('INVALID_REFRESH_TOKEN', 401)
-    }
-
-    try {
-      jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
-    } catch (error) {
-      throw new ApiError('INVALID_REFRESH_TOKEN', 401)
-    }
-
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayloadData
-
-    const user = await UserRepository.getById(decoded.userId)
+    const user = await UserRepository.getById(userId)
 
     if (!user) {
       throw new ApiError('INVALID_USER', 401)
     }
 
     const payload: JwtPayloadData = {
-      userId: decoded.userId
+      userId: userId
     }
 
     const accessToken = getJwtAccessToken(payload)

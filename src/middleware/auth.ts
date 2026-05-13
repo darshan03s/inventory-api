@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { ApiError } from '../errors.js'
+import { RefreshTokenRepository } from '../db/repository.js'
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization
@@ -26,6 +27,34 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
 
     req.userId = payload.userId
   } catch {
+    throw new ApiError('INVALID_TOKEN', 401)
+  }
+
+  next()
+}
+
+export async function verifyRefreshToken(req: Request, res: Response, next: NextFunction) {
+  const refreshToken = req.cookies.refreshToken
+
+  if (!refreshToken) {
+    throw new ApiError('UNAUTHORIZED', 401)
+  }
+
+  const existingRefreshToken = await RefreshTokenRepository.getByToken(refreshToken)
+
+  if (!existingRefreshToken) {
+    throw new ApiError('INVALID_TOKEN', 401)
+  }
+
+  try {
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+
+    if (typeof payload === 'string' || typeof payload.userId !== 'string') {
+      throw new ApiError('INVALID_TOKEN', 401)
+    }
+
+    req.userId = payload.userId
+  } catch (error) {
     throw new ApiError('INVALID_TOKEN', 401)
   }
 
