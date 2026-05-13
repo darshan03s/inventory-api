@@ -165,18 +165,21 @@ authRouter.post(
   })
 )
 
-authRouter.post('/logout', async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken
+authRouter.post(
+  '/logout',
+  withErrorHandler(async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken
 
-  if (!refreshToken) {
+    if (!refreshToken) {
+      return res.sendStatus(204)
+    }
+
+    const refreshTokenHash = hashSha256(refreshToken)
+
+    await RefreshTokenRepository.deleteByToken(refreshTokenHash)
+
+    clearRefreshTokenCookie(res)
+
     return res.sendStatus(204)
-  }
-
-  const refreshTokenHash = hashSha256(refreshToken)
-
-  await RefreshTokenRepository.deleteByToken(refreshTokenHash)
-
-  clearRefreshTokenCookie(res)
-
-  return res.sendStatus(204)
-})
+  })
+)
