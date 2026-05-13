@@ -99,3 +99,48 @@ authRouter.post(
     })
   })
 )
+
+authRouter.post(
+  '/refresh',
+  withErrorHandler(async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken
+
+    if (!refreshToken) {
+      throw new ApiError('UNAUTHORIZED', 401)
+    }
+
+    const existingRefreshToken = await RefreshTokenRepository.getByToken(refreshToken)
+
+    if (!existingRefreshToken) {
+      throw new ApiError('INVALID_REFRESH_TOKEN', 401)
+    }
+
+    try {
+      jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+    } catch (error) {
+      throw new ApiError('INVALID_REFRESH_TOKEN', 401)
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as {
+      userId: string
+    }
+
+    const user = await UserRepository.getById(decoded.userId)
+
+    if (!user) {
+      throw new ApiError('INVALID_USER', 401)
+    }
+
+    const payload = {
+      userId: decoded.userId
+    }
+
+    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
+      expiresIn: '15m'
+    })
+
+    return res.json({
+      accessToken: accessToken
+    })
+  })
+)
