@@ -1,6 +1,6 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import { db } from './index.js'
-import { users } from './schema.js'
+import { refreshTokens, users } from './schema.js'
 
 type UpdateUserInput = {
   name?: string
@@ -49,5 +49,36 @@ export const UserRepository = {
     const [deletedUser] = await db.delete(users).where(eq(users.id, id)).returning()
 
     return deletedUser
+  }
+}
+
+export const RefreshTokenRepository = {
+  create: async (data: { userId: string; token: string; expiresAt: Date }) => {
+    const [refreshToken] = await db.insert(refreshTokens).values(data).returning()
+
+    return refreshToken
+  },
+
+  getByToken: async (token: string) => {
+    const [refreshToken] = await db
+      .select()
+      .from(refreshTokens)
+      .where(eq(refreshTokens.token, token))
+      .limit(1)
+
+    return refreshToken
+  },
+
+  deleteByToken: async (token: string) => {
+    const [deletedRefreshToken] = await db
+      .delete(refreshTokens)
+      .where(eq(refreshTokens.token, token))
+      .returning()
+
+    return deletedRefreshToken
+  },
+
+  deleteAllByUserId: async (userId: string) => {
+    return db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
   }
 }

@@ -7,6 +7,7 @@ import { testRouter } from './router/test.js'
 import { ApiError } from './errors.js'
 import { authRouter } from './router/auth.js'
 import { isUniqueViolation } from './db/utils.js'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(cors())
 app.use(morgan('dev'))
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
   res.json({ status: 'ok' })
