@@ -136,3 +136,17 @@ authRouter.post(
     })
   })
 )
+
+authRouter.post('/logout', async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken
+
+  if (!refreshToken) {
+    return res.sendStatus(204)
+  }
+
+  await RefreshTokenRepository.deleteByToken(refreshToken)
+
+  res.clearCookie('refreshToken')
+
+  return res.sendStatus(204)
+})
