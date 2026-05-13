@@ -7,6 +7,7 @@ import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { verifyRefreshToken } from '../middleware/auth.js'
+import { hashSha256 } from '../utils/index.js'
 
 export const authRouter: Router = Router()
 
@@ -99,9 +100,11 @@ authRouter.post(
 
     const refreshToken = getJwtRefreshToken(payload)
 
+    const hashedRefreshToken = hashSha256(refreshToken)
+
     await RefreshTokenRepository.create({
       userId: existingUser.id,
-      token: refreshToken,
+      token: hashedRefreshToken,
       expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
     })
 
@@ -134,9 +137,12 @@ authRouter.post(
 
     const newRefreshToken = getJwtRefreshToken(payload)
 
+    const oldRefreshTokenHash = hashSha256(oldRefreshToken)
+    const newRefreshTokenHash = hashSha256(newRefreshToken)
+
     await RefreshTokenRepository.rotate(
-      oldRefreshToken,
-      newRefreshToken,
+      oldRefreshTokenHash,
+      newRefreshTokenHash,
       userId,
       new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
     )
@@ -156,7 +162,9 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     return res.sendStatus(204)
   }
 
-  await RefreshTokenRepository.deleteByToken(refreshToken)
+  const refreshTokenHash = hashSha256(refreshToken)
+
+  await RefreshTokenRepository.deleteByToken(refreshTokenHash)
 
   res.clearCookie('refreshToken')
 

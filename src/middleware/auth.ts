@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { ApiError } from '../errors.js'
 import { RefreshTokenRepository } from '../db/repository.js'
+import { hashSha256 } from '../utils/index.js'
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization
@@ -40,7 +41,9 @@ export async function verifyRefreshToken(req: Request, res: Response, next: Next
     throw new ApiError('UNAUTHORIZED', 401)
   }
 
-  const existingRefreshToken = await RefreshTokenRepository.getByToken(refreshToken)
+  const hashedRefreshToken = hashSha256(refreshToken)
+
+  const existingRefreshToken = await RefreshTokenRepository.getByToken(hashedRefreshToken)
 
   if (!existingRefreshToken) {
     throw new ApiError('INVALID_TOKEN', 401)
