@@ -18,7 +18,13 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
   const accessSecret = process.env.JWT_ACCESS_SECRET!
 
   try {
-    jwt.verify(token, accessSecret)
+    const payload = jwt.verify(token, accessSecret)
+
+    if (typeof payload === 'string' || typeof payload.userId !== 'string') {
+      throw new ApiError('INVALID_TOKEN', 401)
+    }
+
+    req.userId = payload.userId
   } catch {
     throw new ApiError('INVALID_TOKEN', 401)
   }
