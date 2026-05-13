@@ -13,8 +13,17 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
+const allowedOrigins = [process.env.FRONTEND_DEV_URL!, process.env.FRONTEND_PROD_URL!].filter(
+  Boolean
+)
+
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true
+  })
+)
 app.use(morgan('dev'))
 app.use(cookieParser())
 
