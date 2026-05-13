@@ -166,7 +166,11 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
 
   await RefreshTokenRepository.deleteByToken(refreshTokenHash)
 
-  res.clearCookie('refreshToken')
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  })
 
   return res.sendStatus(204)
 })
