@@ -30,7 +30,17 @@ function setRefreshTokenCookie(refreshToken: string, res: Response) {
     httpOnly: true,
     maxAge: REFRESH_TOKEN_MAX_AGE,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: 'lax',
+    path: '/'
+  })
+}
+
+function clearRefreshTokenCookie(res: Response) {
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/'
   })
 }
 
@@ -166,11 +176,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
 
   await RefreshTokenRepository.deleteByToken(refreshTokenHash)
 
-  res.clearCookie('refreshToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
-  })
+  clearRefreshTokenCookie(res)
 
   return res.sendStatus(204)
 })
