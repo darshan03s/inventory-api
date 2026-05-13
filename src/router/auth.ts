@@ -1,13 +1,36 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { loginSchema, registerSchema } from '../zod-schemas/auth.js'
-import type { LoginUserBody, RegisterUserBody } from '../types.js'
+import type { JwtPayloadData, LoginUserBody, RegisterUserBody } from '../types.js'
 import { ApiError } from '../errors.js'
 import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 export const authRouter: Router = Router()
+
+const REFRESH_TOKEN_MAX_AGE = 1000 * 60 * 60 * 24 * 7
+
+function getJwtAccessToken(payload: JwtPayloadData) {
+  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
+    expiresIn: '15m'
+  })
+}
+
+function getJwtRefreshToken(payload: JwtPayloadData) {
+  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
+    expiresIn: '7d'
+  })
+}
+
+function setRefreshTokenCookie(refreshToken: string, res: Response) {
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    maxAge: REFRESH_TOKEN_MAX_AGE,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  })
+}
 
 authRouter.post(
   '/register',
@@ -67,19 +90,13 @@ authRouter.post(
       throw new ApiError('INVALID_CREDENTIALS', 401)
     }
 
-    const payload = {
+    const payload: JwtPayloadData = {
       userId: existingUser.id
     }
 
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-      expiresIn: '15m'
-    })
+    const accessToken = getJwtAccessToken(payload)
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-      expiresIn: '7d'
-    })
-
-    const REFRESH_TOKEN_MAX_AGE = 1000 * 60 * 60 * 24 * 7
+    const refreshToken = getJwtRefreshToken(payload)
 
     await RefreshTokenRepository.create({
       userId: existingUser.id,
@@ -87,12 +104,7 @@ authRouter.post(
       expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
     })
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      maxAge: REFRESH_TOKEN_MAX_AGE,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    })
+    setRefreshTokenCookie(refreshToken, res)
 
     return res.json({
       accessToken: accessToken
@@ -121,9 +133,7 @@ authRouter.post(
       throw new ApiError('INVALID_REFRESH_TOKEN', 401)
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as {
-      userId: string
-    }
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as JwtPayloadData
 
     const user = await UserRepository.getById(decoded.userId)
 
@@ -131,13 +141,11 @@ authRouter.post(
       throw new ApiError('INVALID_USER', 401)
     }
 
-    const payload = {
+    const payload: JwtPayloadData = {
       userId: decoded.userId
     }
 
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-      expiresIn: '15m'
-    })
+    const accessToken = getJwtAccessToken(payload)
 
     return res.json({
       accessToken: accessToken
