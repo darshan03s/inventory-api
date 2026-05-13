@@ -35,21 +35,21 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
 }
 
 export async function verifyRefreshToken(req: Request, res: Response, next: NextFunction) {
-  const refreshToken = req.cookies.refreshToken
-
-  if (!refreshToken) {
-    throw new ApiError('UNAUTHORIZED', 401)
-  }
-
-  const hashedRefreshToken = hashSha256(refreshToken)
-
-  const existingRefreshToken = await RefreshTokenRepository.getByToken(hashedRefreshToken)
-
-  if (!existingRefreshToken) {
-    throw new ApiError('INVALID_TOKEN', 401)
-  }
-
   try {
+    const refreshToken = req.cookies.refreshToken
+
+    if (!refreshToken) {
+      throw new ApiError('UNAUTHORIZED', 401)
+    }
+
+    const hashedRefreshToken = hashSha256(refreshToken)
+
+    const existingRefreshToken = await RefreshTokenRepository.getByToken(hashedRefreshToken)
+
+    if (!existingRefreshToken) {
+      throw new ApiError('INVALID_TOKEN', 401)
+    }
+
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
 
     if (typeof payload === 'string' || typeof payload.userId !== 'string') {
@@ -57,9 +57,9 @@ export async function verifyRefreshToken(req: Request, res: Response, next: Next
     }
 
     req.userId = payload.userId
-  } catch (error) {
-    throw new ApiError('INVALID_TOKEN', 401)
-  }
 
-  next()
+    next()
+  } catch (error) {
+    next(error)
+  }
 }
