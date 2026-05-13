@@ -118,7 +118,7 @@ authRouter.post(
   verifyRefreshToken,
   withErrorHandler(async (req: Request, res: Response) => {
     const userId = req.userId!
-    const refreshToken = req.cookies.refreshToken
+    const oldRefreshToken = req.cookies.refreshToken
 
     const user = await UserRepository.getById(userId)
 
@@ -132,15 +132,14 @@ authRouter.post(
 
     const accessToken = getJwtAccessToken(payload)
 
-    await RefreshTokenRepository.deleteByToken(refreshToken)
-
     const newRefreshToken = getJwtRefreshToken(payload)
 
-    await RefreshTokenRepository.create({
-      userId: userId,
-      token: newRefreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
-    })
+    await RefreshTokenRepository.rotate(
+      oldRefreshToken,
+      newRefreshToken,
+      userId,
+      new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
+    )
 
     setRefreshTokenCookie(newRefreshToken, res)
 

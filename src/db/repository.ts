@@ -80,5 +80,22 @@ export const RefreshTokenRepository = {
 
   deleteAllByUserId: async (userId: string) => {
     return db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
+  },
+
+  rotate: async (
+    oldRefreshToken: string,
+    newRefreshToken: string,
+    userId: string,
+    expiresAt: Date
+  ) => {
+    await db.transaction(async (tx) => {
+      await tx.delete(refreshTokens).where(eq(refreshTokens.token, oldRefreshToken))
+
+      await tx.insert(refreshTokens).values({
+        userId,
+        token: newRefreshToken,
+        expiresAt
+      })
+    })
   }
 }
