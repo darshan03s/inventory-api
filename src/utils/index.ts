@@ -10,7 +10,9 @@ export function validateRequestBody<T>(requestBody: unknown, zodSchema: ZodType<
   const validationResult = zodSchema.safeParse(requestBody)
 
   if (!validationResult.success) {
-    throw new ApiError('INVALID_REQUEST_BODY', 400)
+    const firstIssue = validationResult.error.issues[0]
+
+    throw new ApiError(firstIssue?.message || 'INVALID_REQUEST_BODY', 400)
   }
 
   return validationResult.data

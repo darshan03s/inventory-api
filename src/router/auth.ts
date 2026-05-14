@@ -47,21 +47,7 @@ function clearRefreshTokenCookie(res: Response) {
 authRouter.post(
   '/register',
   withErrorHandler(async (req: Request<{}, {}, RegisterUserBody>, res: Response) => {
-    const validationResult = registerSchema.safeParse(req.body)
-
-    if (!validationResult.success) {
-      const hasShortPassword = validationResult.error.issues.some(
-        (issue) => issue.path[0] === 'password' && issue.code === 'too_small'
-      )
-
-      if (hasShortPassword) {
-        throw new ApiError('PASSWORD_TOO_SHORT', 400)
-      }
-
-      throw new ApiError('INVALID_REQUEST_BODY', 400)
-    }
-
-    const validatedUser = validationResult.data
+    const validatedUser = validateRequestBody(req.body, registerSchema)
 
     const passwordHash = await bcrypt.hash(validatedUser.password, 10)
 
