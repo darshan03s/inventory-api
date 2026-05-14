@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const test = pgTable('test', {
@@ -63,3 +64,14 @@ export const suppliers = pgTable('suppliers', {
     .$onUpdate(() => new Date())
     .notNull()
 })
+
+export const usersRelations = relations(users, ({ one }) => ({
+  supplier: one(suppliers)
+}))
+
+export const suppliersRelations = relations(suppliers, ({ one }) => ({
+  user: one(users, {
+    fields: [suppliers.userId],
+    references: [users.id]
+  })
+}))

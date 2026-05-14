@@ -6,7 +6,7 @@ import { ApiError } from '../errors.js'
 import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { verifyRefreshToken } from '../middleware/auth.js'
+import { verifyAccessToken, verifyRefreshToken } from '../middleware/auth.js'
 import { hashSha256 } from '../utils/index.js'
 
 export const authRouter: Router = Router()
@@ -121,7 +121,12 @@ authRouter.post(
     setRefreshTokenCookie(refreshToken, res)
 
     return res.json({
-      accessToken: accessToken
+      accessToken: accessToken,
+      user: {
+        name: existingUser.name,
+        email: existingUser.email,
+        createdAt: existingUser.createdAt
+      }
     })
   })
 )
@@ -181,5 +186,21 @@ authRouter.post(
     clearRefreshTokenCookie(res)
 
     return res.sendStatus(204)
+  })
+)
+
+authRouter.get(
+  '/me',
+  verifyAccessToken,
+  withErrorHandler(async (req: Request, res: Response) => {
+    const userId = req.userId!
+
+    const user = await UserRepository.getByIdWithSupplier(userId)
+
+    if (!user) {
+      throw new ApiError('USER_NOT_FOUND', 404)
+    }
+
+    return res.json(user)
   })
 )

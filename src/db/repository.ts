@@ -21,6 +21,27 @@ export const UserRepository = {
     return user
   },
 
+  getByIdWithSupplier: async (userId: string) => {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+
+      columns: {
+        passwordHash: false
+      },
+
+      with: {
+        supplier: {
+          columns: {
+            id: true,
+            companyName: true
+          }
+        }
+      }
+    })
+
+    return user
+  },
+
   getByEmail: async (email: string) => {
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1)
 
