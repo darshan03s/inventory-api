@@ -1,6 +1,6 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import { db } from './index.js'
-import { refreshTokens, users } from './schema.js'
+import { refreshTokens, suppliers, users } from './schema.js'
 
 type UpdateUserInput = {
   name?: string
@@ -97,5 +97,23 @@ export const RefreshTokenRepository = {
         expiresAt
       })
     })
+  }
+}
+
+export const SuppliersRepository = {
+  create: async (data: { userId: string; phone: string; companyName: string }) => {
+    const [supplier] = await db.insert(suppliers).values(data).returning()
+
+    return supplier
+  },
+
+  getByUserId: async (userId: string) => {
+    const [supplier] = await db
+      .select()
+      .from(suppliers)
+      .where(eq(suppliers.userId, userId))
+      .limit(1)
+
+    return supplier
   }
 }
