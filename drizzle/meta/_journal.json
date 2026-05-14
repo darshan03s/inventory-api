@@ -22,6 +22,13 @@
       "when": 1778649449530,
       "tag": "0002_add_refresh_tokens_table",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778767138081,
+      "tag": "0003_add_suppliers_table",
+      "breakpoints": true
     }
   ]
 }

@@ -41,3 +41,25 @@ export const refreshTokens = pgTable('refresh_tokens', {
     .$onUpdate(() => new Date())
     .notNull()
 })
+
+export const suppliers = pgTable('suppliers', {
+  id: uuid().defaultRandom().primaryKey(),
+
+  userId: uuid()
+    .notNull()
+    .references(() => users.id, {
+      onDelete: 'cascade'
+    })
+    .unique(),
+
+  phone: text().notNull(),
+
+  companyName: text().notNull(),
+
+  createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+
+  updatedAt: timestamp({ withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull()
+})
