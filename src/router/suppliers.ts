@@ -4,21 +4,18 @@ import { createSupplierSchema } from '../zod-schemas/suppliers.js'
 import type { CreateSupplierBody } from '../types.js'
 import { ApiError } from '../errors.js'
 import { SuppliersRepository } from '../db/repository.js'
+import { validateRequestBody } from '../utils/index.js'
 
 export const suppliersRouter: Router = Router()
 
 suppliersRouter.post(
   '/',
   withErrorHandler(async (req: Request<{}, {}, CreateSupplierBody>, res: Response) => {
-    const validationResult = createSupplierSchema.safeParse(req.body)
-
-    if (!validationResult.success) {
-      throw new ApiError('INVALID_REQUEST_BODY', 400)
-    }
+    const validatedSupplier = validateRequestBody(req.body, createSupplierSchema)
 
     const userId = req.userId!
 
-    const supplier = await SuppliersRepository.create({ ...validationResult.data, userId })
+    const supplier = await SuppliersRepository.create({ ...validatedSupplier, userId })
 
     return res.status(201).json({
       code: 'SUPPLIER_CREATED',

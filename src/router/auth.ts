@@ -7,7 +7,7 @@ import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { verifyAccessToken, verifyRefreshToken } from '../middleware/auth.js'
-import { hashSha256 } from '../utils/index.js'
+import { hashSha256, validateRequestBody } from '../utils/index.js'
 
 export const authRouter: Router = Router()
 
@@ -79,13 +79,7 @@ authRouter.post(
 authRouter.post(
   '/login',
   withErrorHandler(async (req: Request<{}, {}, LoginUserBody>, res: Response) => {
-    const validationResult = loginSchema.safeParse(req.body)
-
-    if (!validationResult.success) {
-      throw new ApiError('INVALID_REQUEST_BODY', 400)
-    }
-
-    const validatedUser = validationResult.data
+    const validatedUser = validateRequestBody(req.body, loginSchema)
 
     const existingUser = await UserRepository.getByEmail(validatedUser.email)
 
