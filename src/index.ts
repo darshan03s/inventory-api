@@ -8,6 +8,8 @@ import { ApiError } from './errors.js'
 import { authRouter } from './router/auth.js'
 import { isUniqueViolation } from './db/utils.js'
 import cookieParser from 'cookie-parser'
+import { suppliersRouter } from './router/suppliers.js'
+import { verifyAccessToken } from './middleware/auth.js'
 
 const app = express()
 
@@ -36,6 +38,8 @@ app.use('/health', healthRouter)
 app.use('/test', testRouter)
 
 app.use('/auth', authRouter)
+
+app.use('/suppliers', verifyAccessToken, suppliersRouter)
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   if (isUniqueViolation(error)) {
