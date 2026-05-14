@@ -39,7 +39,7 @@ app.use('/test', testRouter)
 
 app.use('/auth', authRouter)
 
-app.use('/suppliers', verifyAccessToken, suppliersRouter)
+app.use('/api/suppliers', verifyAccessToken, suppliersRouter)
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   if (isUniqueViolation(error)) {
