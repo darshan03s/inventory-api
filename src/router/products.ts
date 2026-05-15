@@ -81,3 +81,31 @@ productsRouter.patch(
     })
   })
 )
+
+productsRouter.delete(
+  '/:id',
+  verifySupplier,
+  withErrorHandler(async (req: Request<{ id?: string }>, res: Response) => {
+    const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
+
+    const existingProduct = await ProductsRepository.getById(validatedParams.id)
+
+    if (!existingProduct) {
+      throw new ApiError('PRODUCT_NOT_FOUND', 404)
+    }
+
+    if (existingProduct.supplierId !== req.supplierId) {
+      throw new ApiError('FORBIDDEN', 403)
+    }
+
+    const deletedProduct = await ProductsRepository.deleteById(validatedParams.id)
+
+    if (!deletedProduct) {
+      throw new ApiError('COULD_NOT_DELETE_PRODUCT', 500)
+    }
+
+    return res.status(200).json({
+      code: 'PRODUCT_DELETED'
+    })
+  })
+)
