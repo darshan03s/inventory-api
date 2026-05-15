@@ -1,5 +1,6 @@
 import type z from 'zod'
 import type { loginSchema, registerSchema } from '../zod-schemas/auth.js'
+import type { createProductSchema } from '../zod-schemas/products.js'
 import type { createSupplierSchema } from '../zod-schemas/suppliers.js'
 
 export type RegisterUserBody = z.infer<typeof registerSchema>
@@ -11,3 +12,5 @@ export type JwtPayloadData = {
 }
 
 export type CreateSupplierBody = z.infer<typeof createSupplierSchema>
+
+export type CreateProductBody = z.infer<typeof createProductSchema>

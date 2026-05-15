@@ -10,6 +10,7 @@ import { isUniqueViolation } from './db/utils.js'
 import cookieParser from 'cookie-parser'
 import { suppliersRouter } from './router/suppliers.js'
 import { verifyAccessToken } from './middleware/auth.js'
+import { productsRouter } from './router/products.js'
 
 const app = express()
 
@@ -40,6 +41,8 @@ app.use('/test', testRouter)
 app.use('/auth', authRouter)
 
 app.use('/api/suppliers', verifyAccessToken, suppliersRouter)
+
+app.use('/api/products', verifyAccessToken, productsRouter)
 
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   if (isUniqueViolation(error)) {
