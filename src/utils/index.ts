@@ -17,3 +17,9 @@ export function validateRequestBody<T>(requestBody: unknown, zodSchema: ZodType<
 
   return validationResult.data
 }
+
+export function removeUndefinedFields<T extends object>(obj: T) {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined)) as {
+    [K in keyof T as undefined extends T[K] ? K : K]: Exclude<T[K], undefined>
+  }
+}

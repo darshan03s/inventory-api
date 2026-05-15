@@ -22,3 +22,13 @@ export const createProductSchema = z.object({
 
   stockQuantity: z.number().int('INVALID_STOCK_QUANTITY').nonnegative('INVALID_STOCK_QUANTITY')
 })
+
+export const updateProductSchema = createProductSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'AT_LEAST_ONE_FIELD_REQUIRED'
+  })
+
+export const productIdParamsSchema = z.object({
+  id: z.uuid('INVALID_PRODUCT_ID')
+})
