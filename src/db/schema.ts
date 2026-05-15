@@ -105,7 +105,7 @@ export const products = pgTable(
       .notNull()
   },
   (table) => [
-    uniqueIndex('products_sku_index').on(table.sku),
+    uniqueIndex('products_supplier_sku_index').on(table.supplierId, table.sku),
     index('products_supplier_id_index').on(table.supplierId)
   ]
 )
