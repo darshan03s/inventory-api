@@ -16,3 +16,18 @@ export type CreateSupplierBody = z.infer<typeof createSupplierSchema>
 export type CreateProductBody = z.infer<typeof createProductSchema>
 
 export type UpdateProductBody = z.infer<typeof updateProductSchema>
+
+export type ProductFilters = {
+  supplierId: string
+
+  search?: string
+  sku?: string
+
+  minPrice?: number
+  maxPrice?: number
+
+  inStock?: boolean
+
+  page?: number
+  limit?: number
+}

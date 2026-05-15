@@ -4,11 +4,13 @@ import { verifySupplier } from '../middleware/suppliers.js'
 import { removeUndefinedFields, validateRequestBody } from '../utils/index.js'
 import {
   createProductSchema,
+  getProductsQuerySchema,
   productIdParamsSchema,
   updateProductSchema
 } from '../zod-schemas/products.js'
 import { ProductsRepository } from '../db/repository.js'
 import { ApiError } from '../errors.js'
+import type { ProductFilters } from '../types/index.js'
 
 export const productsRouter: Router = Router()
 
@@ -126,5 +128,24 @@ productsRouter.get(
     }
 
     return res.json(product)
+  })
+)
+
+productsRouter.get(
+  '/',
+  verifySupplier,
+  withErrorHandler(async (req: Request, res: Response) => {
+    const validatedQuery = validateRequestBody(req.query, getProductsQuerySchema)
+
+    const updatedQuery = removeUndefinedFields(validatedQuery)
+
+    const filters: ProductFilters = {
+      supplierId: req.supplierId!,
+      ...updatedQuery
+    }
+
+    const products = await ProductsRepository.getMany(filters)
+
+    return res.json(products)
   })
 )

@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, ilike, lte } from 'drizzle-orm'
 import { db } from './index.js'
 import { products, refreshTokens, suppliers, users } from './schema.js'
 import type {
@@ -9,6 +9,7 @@ import type {
   UpdateProductData,
   UpdateUserData
 } from '../types/db.js'
+import type { ProductFilters } from '../types/index.js'
 
 export const UsersRepository = {
   create: async (data: CreateUserData) => {
@@ -168,5 +169,44 @@ export const ProductsRepository = {
     const [deletedProduct] = await db.delete(products).where(eq(products.id, id)).returning()
 
     return deletedProduct
+  },
+
+  getMany: async (filters: ProductFilters) => {
+    const conditions = [eq(products.supplierId, filters.supplierId)]
+
+    if (filters.search) {
+      conditions.push(ilike(products.name, `%${filters.search}%`))
+    }
+
+    if (filters.sku) {
+      conditions.push(eq(products.sku, filters.sku))
+    }
+
+    if (filters.minPrice !== undefined) {
+      conditions.push(gte(products.price, filters.minPrice))
+    }
+
+    if (filters.maxPrice !== undefined) {
+      conditions.push(lte(products.price, filters.maxPrice))
+    }
+
+    if (filters.inStock) {
+      conditions.push(gte(products.stockQuantity, 1))
+    }
+
+    const page = filters.page ?? 1
+    const limit = filters.limit ?? 20
+
+    const offset = (page - 1) * limit
+
+    const allProducts = await db
+      .select()
+      .from(products)
+      .where(and(...conditions))
+      .orderBy(desc(products.createdAt))
+      .limit(limit)
+      .offset(offset)
+
+    return allProducts
   }
 }
