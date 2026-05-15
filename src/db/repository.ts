@@ -2,7 +2,7 @@ import { asc, desc, eq } from 'drizzle-orm'
 import { db } from './index.js'
 import { products, refreshTokens, suppliers, users } from './schema.js'
 
-export const UserRepository = {
+export const UsersRepository = {
   create: async (data: { name: string; email: string; passwordHash: string }) => {
     const [user] = await db.insert(users).values(data).returning()
 

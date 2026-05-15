@@ -3,7 +3,7 @@ import { withErrorHandler } from '../error-handler.js'
 import { loginSchema, registerSchema } from '../zod-schemas/auth.js'
 import type { JwtPayloadData, LoginUserBody, RegisterUserBody } from '../types.js'
 import { ApiError } from '../errors.js'
-import { RefreshTokenRepository, UserRepository } from '../db/repository.js'
+import { RefreshTokenRepository, UsersRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { verifyAccessToken, verifyRefreshToken } from '../middleware/auth.js'
@@ -51,7 +51,7 @@ authRouter.post(
 
     const passwordHash = await bcrypt.hash(validatedUser.password, 10)
 
-    await UserRepository.create({
+    await UsersRepository.create({
       ...validatedUser,
       passwordHash
     })
@@ -67,7 +67,7 @@ authRouter.post(
   withErrorHandler(async (req: Request<{}, {}, LoginUserBody>, res: Response) => {
     const validatedUser = validateRequestBody(req.body, loginSchema)
 
-    const existingUser = await UserRepository.getByEmail(validatedUser.email)
+    const existingUser = await UsersRepository.getByEmail(validatedUser.email)
 
     if (!existingUser) {
       throw new ApiError('INVALID_CREDENTIALS', 401)
@@ -118,7 +118,7 @@ authRouter.post(
     const userId = req.userId!
     const oldRefreshToken = req.cookies.refreshToken
 
-    const user = await UserRepository.getById(userId)
+    const user = await UsersRepository.getById(userId)
 
     if (!user) {
       throw new ApiError('INVALID_USER', 401)
@@ -175,7 +175,7 @@ authRouter.get(
   withErrorHandler(async (req: Request, res: Response) => {
     const userId = req.userId!
 
-    const user = await UserRepository.getByIdWithSupplier(userId)
+    const user = await UsersRepository.getByIdWithSupplier(userId)
 
     if (!user) {
       throw new ApiError('USER_NOT_FOUND', 404)
