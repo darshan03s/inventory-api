@@ -44,7 +44,7 @@ productsRouter.post(
 productsRouter.patch(
   '/:id',
   verifySupplier,
-  withErrorHandler(async (req: Request<{ id?: string }, {}, UpdateProductBody>, res: Response) => {
+  withErrorHandler(async (req: Request<{}, {}, UpdateProductBody>, res: Response) => {
     const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
 
     const validatedBody = validateRequestBody(req.body, updateProductSchema)
@@ -85,7 +85,7 @@ productsRouter.patch(
 productsRouter.delete(
   '/:id',
   verifySupplier,
-  withErrorHandler(async (req: Request<{ id?: string }>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
 
     const existingProduct = await ProductsRepository.getById(validatedParams.id)
@@ -107,5 +107,25 @@ productsRouter.delete(
     return res.status(200).json({
       code: 'PRODUCT_DELETED'
     })
+  })
+)
+
+productsRouter.get(
+  '/:id',
+  verifySupplier,
+  withErrorHandler(async (req: Request, res: Response) => {
+    const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
+
+    const product = await ProductsRepository.getById(validatedParams.id)
+
+    if (!product) {
+      throw new ApiError('PRODUCT_NOT_FOUND', 404)
+    }
+
+    if (product.supplierId !== req.supplierId) {
+      throw new ApiError('FORBIDDEN', 403)
+    }
+
+    return res.json(product)
   })
 )
