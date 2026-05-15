@@ -29,6 +29,13 @@
       "when": 1778767138081,
       "tag": "0003_add_suppliers_table",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778818596913,
+      "tag": "0004_add_products_table",
+      "breakpoints": true
     }
   ]
 }

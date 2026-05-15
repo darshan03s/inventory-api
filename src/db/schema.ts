@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const test = pgTable('test', {
   id: uuid().defaultRandom()
@@ -75,3 +75,37 @@ export const suppliersRelations = relations(suppliers, ({ one }) => ({
     references: [users.id]
   })
 }))
+
+export const products = pgTable(
+  'products',
+  {
+    id: uuid().defaultRandom().primaryKey(),
+
+    supplierId: uuid()
+      .notNull()
+      .references(() => users.id, {
+        onDelete: 'cascade'
+      }),
+
+    name: text().notNull(),
+
+    description: text().notNull(),
+
+    sku: text().notNull(),
+
+    price: integer().notNull(),
+
+    stockQuantity: integer().notNull(),
+
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+
+    updatedAt: timestamp({ withTimezone: true })
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull()
+  },
+  (table) => [
+    index('products_sku_index').on(table.sku),
+    index('products_supplier_id_index').on(table.supplierId)
+  ]
+)
