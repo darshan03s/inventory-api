@@ -12,6 +12,8 @@ export const createProductSchema = z.object({
   sku: z
     .string()
     .trim()
+    .toUpperCase()
+    .trim()
     .min(1, 'SKU_REQUIRED')
     .max(100, 'SKU_TOO_LONG')
     .regex(/^[a-zA-Z0-9_-]+$/, 'INVALID_SKU'),
