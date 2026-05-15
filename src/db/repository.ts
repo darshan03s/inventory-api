@@ -1,9 +1,17 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import { db } from './index.js'
 import { products, refreshTokens, suppliers, users } from './schema.js'
+import type {
+  CreateProductData,
+  CreateRefreshTokenData,
+  CreateSupplierData,
+  CreateUserData,
+  UpdateProductData,
+  UpdateUserData
+} from '../types/db.js'
 
 export const UsersRepository = {
-  create: async (data: { name: string; email: string; passwordHash: string }) => {
+  create: async (data: CreateUserData) => {
     const [user] = await db.insert(users).values(data).returning()
 
     return user
@@ -54,14 +62,7 @@ export const UsersRepository = {
     return allUsers
   },
 
-  updateById: async (
-    id: string,
-    data: {
-      name?: string
-      email?: string
-      passwordHash?: string
-    }
-  ) => {
+  updateById: async (id: string, data: UpdateUserData) => {
     const [updatedUser] = await db.update(users).set(data).where(eq(users.id, id)).returning()
 
     return updatedUser
@@ -75,7 +76,7 @@ export const UsersRepository = {
 }
 
 export const RefreshTokenRepository = {
-  create: async (data: { userId: string; token: string; expiresAt: Date }) => {
+  create: async (data: CreateRefreshTokenData) => {
     const [refreshToken] = await db.insert(refreshTokens).values(data).returning()
 
     return refreshToken
@@ -123,7 +124,7 @@ export const RefreshTokenRepository = {
 }
 
 export const SuppliersRepository = {
-  create: async (data: { userId: string; phone: string; companyName: string }) => {
+  create: async (data: CreateSupplierData) => {
     const [supplier] = await db.insert(suppliers).values(data).returning()
 
     return supplier
@@ -141,14 +142,7 @@ export const SuppliersRepository = {
 }
 
 export const ProductsRepository = {
-  create: async (data: {
-    supplierId: string
-    name: string
-    description: string
-    sku: string
-    price: number
-    stockQuantity: number
-  }) => {
+  create: async (data: CreateProductData) => {
     const [product] = await db.insert(products).values(data).returning()
 
     return product
@@ -160,17 +154,7 @@ export const ProductsRepository = {
     return product
   },
 
-  updateById: async (
-    id: string,
-    data: {
-      supplierId?: string
-      name?: string
-      description?: string
-      sku?: string
-      price?: number
-      stockQuantity?: number
-    }
-  ) => {
+  updateById: async (id: string, data: UpdateProductData) => {
     const [updatedProduct] = await db
       .update(products)
       .set(data)
