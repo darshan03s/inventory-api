@@ -3,14 +3,14 @@ import { withErrorHandler } from '../error-handler.js'
 import { createSupplierSchema } from '../zod-schemas/suppliers.js'
 import { ApiError } from '../errors.js'
 import { SuppliersRepository } from '../db/repository.js'
-import { validateRequestBody } from '../utils/index.js'
+import { validateRequest } from '../utils/index.js'
 
 export const suppliersRouter: Router = Router()
 
 suppliersRouter.post(
   '/',
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedSupplier = validateRequestBody(req.body, createSupplierSchema)
+    const validatedSupplier = validateRequest(req.body, createSupplierSchema)
 
     const userId = req.userId!
 

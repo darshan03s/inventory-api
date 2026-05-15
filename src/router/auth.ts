@@ -7,7 +7,7 @@ import { RefreshTokenRepository, UsersRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { verifyAccessToken, verifyRefreshToken } from '../middleware/auth.js'
-import { hashSha256, validateRequestBody } from '../utils/index.js'
+import { hashSha256, validateRequest } from '../utils/index.js'
 
 export const authRouter: Router = Router()
 
@@ -47,7 +47,7 @@ function clearRefreshTokenCookie(res: Response) {
 authRouter.post(
   '/register',
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedUser = validateRequestBody(req.body, registerSchema)
+    const validatedUser = validateRequest(req.body, registerSchema)
 
     const passwordHash = await bcrypt.hash(validatedUser.password, 10)
 
@@ -65,7 +65,7 @@ authRouter.post(
 authRouter.post(
   '/login',
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedUser = validateRequestBody(req.body, loginSchema)
+    const validatedUser = validateRequest(req.body, loginSchema)
 
     const existingUser = await UsersRepository.getByEmail(validatedUser.email)
 

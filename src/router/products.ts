@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { verifySupplier } from '../middleware/suppliers.js'
-import { removeUndefinedFields, validateRequestBody } from '../utils/index.js'
+import { removeUndefinedFields, validateRequest } from '../utils/index.js'
 import {
   createProductSchema,
   getProductsQuerySchema,
@@ -18,7 +18,7 @@ productsRouter.post(
   '/',
   verifySupplier,
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedProduct = validateRequestBody(req.body, createProductSchema)
+    const validatedProduct = validateRequest(req.body, createProductSchema)
 
     const supplierId = req.supplierId!
 
@@ -46,9 +46,9 @@ productsRouter.patch(
   '/:id',
   verifySupplier,
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
+    const validatedParams = validateRequest(req.params, productIdParamsSchema)
 
-    const validatedBody = validateRequestBody(req.body, updateProductSchema)
+    const validatedBody = validateRequest(req.body, updateProductSchema)
 
     const existingProduct = await ProductsRepository.getById(validatedParams.id)
 
@@ -87,7 +87,7 @@ productsRouter.delete(
   '/:id',
   verifySupplier,
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
+    const validatedParams = validateRequest(req.params, productIdParamsSchema)
 
     const existingProduct = await ProductsRepository.getById(validatedParams.id)
 
@@ -115,7 +115,7 @@ productsRouter.get(
   '/:id',
   verifySupplier,
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
+    const validatedParams = validateRequest(req.params, productIdParamsSchema)
 
     const product = await ProductsRepository.getById(validatedParams.id)
 
@@ -135,7 +135,7 @@ productsRouter.get(
   '/',
   verifySupplier,
   withErrorHandler(async (req: Request, res: Response) => {
-    const validatedQuery = validateRequestBody(req.query, getProductsQuerySchema)
+    const validatedQuery = validateRequest(req.query, getProductsQuerySchema)
 
     const updatedQuery = removeUndefinedFields(validatedQuery)
 

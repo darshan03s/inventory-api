@@ -6,7 +6,7 @@ export function hashSha256(str: string) {
   return crypto.createHash('sha256').update(str).digest('hex')
 }
 
-export function validateRequestBody<T>(requestBody: unknown, zodSchema: ZodType<T>): T {
+export function validateRequest<T>(requestBody: unknown, zodSchema: ZodType<T>): T {
   const validationResult = zodSchema.safeParse(requestBody)
 
   if (!validationResult.success) {
