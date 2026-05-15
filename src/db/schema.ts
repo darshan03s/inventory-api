@@ -83,7 +83,7 @@ export const products = pgTable(
 
     supplierId: uuid()
       .notNull()
-      .references(() => users.id, {
+      .references(() => suppliers.id, {
         onDelete: 'cascade'
       }),
 
