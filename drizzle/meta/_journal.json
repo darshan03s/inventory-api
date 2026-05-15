@@ -36,6 +36,13 @@
       "when": 1778818596913,
       "tag": "0004_add_products_table",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778819186685,
+      "tag": "0005_add_unique_index_to_products_sku",
+      "breakpoints": true
     }
   ]
 }

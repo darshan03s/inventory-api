@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 
 export const test = pgTable('test', {
   id: uuid().defaultRandom()
@@ -105,7 +105,7 @@ export const products = pgTable(
       .notNull()
   },
   (table) => [
-    index('products_sku_index').on(table.sku),
+    uniqueIndex('products_sku_index').on(table.sku),
     index('products_supplier_id_index').on(table.supplierId)
   ]
 )
