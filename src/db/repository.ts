@@ -1,12 +1,6 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import { db } from './index.js'
-import { refreshTokens, suppliers, users } from './schema.js'
-
-type UpdateUserInput = {
-  name?: string
-  email?: string
-  passwordHash?: string
-}
+import { products, refreshTokens, suppliers, users } from './schema.js'
 
 export const UserRepository = {
   create: async (data: { name: string; email: string; passwordHash: string }) => {
@@ -60,7 +54,14 @@ export const UserRepository = {
     return allUsers
   },
 
-  updateById: async (id: string, data: UpdateUserInput) => {
+  updateById: async (
+    id: string,
+    data: {
+      name?: string
+      email?: string
+      passwordHash?: string
+    }
+  ) => {
     const [updatedUser] = await db.update(users).set(data).where(eq(users.id, id)).returning()
 
     return updatedUser
@@ -136,5 +137,52 @@ export const SuppliersRepository = {
       .limit(1)
 
     return supplier
+  }
+}
+
+export const ProductsRepository = {
+  create: async (data: {
+    supplierId: string
+    name: string
+    description: string
+    sku: string
+    price: number
+    stockQuantity: number
+  }) => {
+    const [product] = await db.insert(products).values(data).returning()
+
+    return product
+  },
+
+  getById: async (id: string) => {
+    const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1)
+
+    return product
+  },
+
+  updateById: async (
+    id: string,
+    data: {
+      supplierId?: string
+      name?: string
+      description?: string
+      sku?: string
+      price?: number
+      stockQuantity?: number
+    }
+  ) => {
+    const [updatedProduct] = await db
+      .update(products)
+      .set(data)
+      .where(eq(products.id, id))
+      .returning()
+
+    return updatedProduct
+  },
+
+  deleteById: async (id: string) => {
+    const [deletedProduct] = await db.delete(products).where(eq(products.id, id)).returning()
+
+    return deletedProduct
   }
 }
