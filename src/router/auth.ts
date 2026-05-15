@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { loginSchema, registerSchema } from '../zod-schemas/auth.js'
-import type { JwtPayloadData, LoginUserBody, RegisterUserBody } from '../types.js'
+import type { JwtPayloadData, LoginUserBody, RegisterUserBody } from '../types/index.js'
 import { ApiError } from '../errors.js'
 import { RefreshTokenRepository, UsersRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'

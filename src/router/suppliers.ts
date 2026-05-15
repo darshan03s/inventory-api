@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { createSupplierSchema } from '../zod-schemas/suppliers.js'
-import type { CreateSupplierBody } from '../types.js'
+import type { CreateSupplierBody } from '../types/index.js'
 import { ApiError } from '../errors.js'
 import { SuppliersRepository } from '../db/repository.js'
 import { validateRequestBody } from '../utils/index.js'
