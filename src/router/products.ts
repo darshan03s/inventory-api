@@ -2,7 +2,6 @@ import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { verifySupplier } from '../middleware/suppliers.js'
 import { removeUndefinedFields, validateRequestBody } from '../utils/index.js'
-import type { CreateProductBody, UpdateProductBody } from '../types/index.js'
 import {
   createProductSchema,
   productIdParamsSchema,
@@ -16,7 +15,7 @@ export const productsRouter: Router = Router()
 productsRouter.post(
   '/',
   verifySupplier,
-  withErrorHandler(async (req: Request<{}, {}, CreateProductBody>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedProduct = validateRequestBody(req.body, createProductSchema)
 
     const supplierId = req.supplierId!
@@ -44,7 +43,7 @@ productsRouter.post(
 productsRouter.patch(
   '/:id',
   verifySupplier,
-  withErrorHandler(async (req: Request<{}, {}, UpdateProductBody>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedParams = validateRequestBody(req.params, productIdParamsSchema)
 
     const validatedBody = validateRequestBody(req.body, updateProductSchema)

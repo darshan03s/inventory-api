@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { loginSchema, registerSchema } from '../zod-schemas/auth.js'
-import type { JwtPayloadData, LoginUserBody, RegisterUserBody } from '../types/index.js'
+import type { JwtPayloadData } from '../types/index.js'
 import { ApiError } from '../errors.js'
 import { RefreshTokenRepository, UsersRepository } from '../db/repository.js'
 import bcrypt from 'bcrypt'
@@ -46,7 +46,7 @@ function clearRefreshTokenCookie(res: Response) {
 
 authRouter.post(
   '/register',
-  withErrorHandler(async (req: Request<{}, {}, RegisterUserBody>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedUser = validateRequestBody(req.body, registerSchema)
 
     const passwordHash = await bcrypt.hash(validatedUser.password, 10)
@@ -64,7 +64,7 @@ authRouter.post(
 
 authRouter.post(
   '/login',
-  withErrorHandler(async (req: Request<{}, {}, LoginUserBody>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedUser = validateRequestBody(req.body, loginSchema)
 
     const existingUser = await UsersRepository.getByEmail(validatedUser.email)

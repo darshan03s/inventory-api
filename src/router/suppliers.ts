@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from 'express'
 import { withErrorHandler } from '../error-handler.js'
 import { createSupplierSchema } from '../zod-schemas/suppliers.js'
-import type { CreateSupplierBody } from '../types/index.js'
 import { ApiError } from '../errors.js'
 import { SuppliersRepository } from '../db/repository.js'
 import { validateRequestBody } from '../utils/index.js'
@@ -10,7 +9,7 @@ export const suppliersRouter: Router = Router()
 
 suppliersRouter.post(
   '/',
-  withErrorHandler(async (req: Request<{}, {}, CreateSupplierBody>, res: Response) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const validatedSupplier = validateRequestBody(req.body, createSupplierSchema)
 
     const userId = req.userId!
@@ -26,7 +25,7 @@ suppliersRouter.post(
 
 suppliersRouter.get(
   '/me',
-  withErrorHandler(async (req, res) => {
+  withErrorHandler(async (req: Request, res: Response) => {
     const supplier = await SuppliersRepository.getByUserId(req.userId!)
 
     if (!supplier) {
