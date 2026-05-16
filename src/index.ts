@@ -16,9 +16,7 @@ const app = express()
 
 const PORT = process.env.PORT || 3000
 
-const allowedOrigins = [process.env.FRONTEND_DEV_URL!, process.env.FRONTEND_PROD_URL!].filter(
-  Boolean
-)
+const allowedOrigins = [process.env.FRONTEND_URL!].filter(Boolean)
 
 app.use(express.json())
 app.use(
