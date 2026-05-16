@@ -13,7 +13,7 @@ export const env = createEnv({
 
     JWT_REFRESH_SECRET: z.string().min(32),
 
-    FRONTEND_URL: z.url()
+    CORS_ORIGIN: z.url()
   },
 
   runtimeEnv: process.env,
