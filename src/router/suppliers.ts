@@ -38,6 +38,6 @@ suppliersRouter.get(
       throw new ApiError('SUPPLIER_NOT_FOUND', 404)
     }
 
-    return res.json(supplier)
+    return res.json({ supplier })
   })
 )

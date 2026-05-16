@@ -178,6 +178,6 @@ authRouter.get(
       throw new ApiError('USER_NOT_FOUND', 404)
     }
 
-    return res.json(user)
+    return res.json({ user })
   })
 )

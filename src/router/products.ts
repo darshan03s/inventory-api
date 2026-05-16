@@ -134,7 +134,7 @@ productsRouter.get(
       throw new ApiError('FORBIDDEN', 403)
     }
 
-    return res.json(product)
+    return res.json({ product })
   })
 )
 
@@ -153,6 +153,6 @@ productsRouter.get(
 
     const products = await ProductsRepository.getMany(filters)
 
-    return res.json(products)
+    return res.json({ products })
   })
 )
