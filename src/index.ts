@@ -11,12 +11,13 @@ import cookieParser from 'cookie-parser'
 import { suppliersRouter } from './router/suppliers.js'
 import { verifyAccessToken } from './middleware/auth.js'
 import { productsRouter } from './router/products.js'
+import { env } from './env.js'
 
 const app = express()
 
-const PORT = process.env.PORT || 3000
+const PORT = env.PORT
 
-const allowedOrigins = [process.env.FRONTEND_URL!].filter(Boolean)
+const allowedOrigins = [env.FRONTEND_URL].filter(Boolean)
 
 app.use(express.json())
 app.use(

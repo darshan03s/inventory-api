@@ -8,19 +8,20 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { verifyAccessToken, verifyRefreshToken } from '@/middleware/auth.js'
 import { hashSha256, validateRequest } from '@/utils/index.js'
+import { env } from '@/env.js'
 
 export const authRouter: Router = Router()
 
 const REFRESH_TOKEN_MAX_AGE = 1000 * 60 * 60 * 24 * 7
 
 function getJwtAccessToken(payload: JwtPayloadData) {
-  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
+  return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
     expiresIn: '15m'
   })
 }
 
 function getJwtRefreshToken(payload: JwtPayloadData) {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
+  return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
     expiresIn: '7d'
   })
 }
@@ -29,7 +30,7 @@ function setRefreshTokenCookie(refreshToken: string, res: Response) {
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     maxAge: REFRESH_TOKEN_MAX_AGE,
-    secure: process.env.NODE_ENV === 'production',
+    secure: env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/'
   })
@@ -38,7 +39,7 @@ function setRefreshTokenCookie(refreshToken: string, res: Response) {
 function clearRefreshTokenCookie(res: Response) {
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/'
   })

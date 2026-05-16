@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { ApiError } from '@/errors.js'
 import { RefreshTokenRepository } from '@/db/repository.js'
 import { hashSha256 } from '@/utils/index.js'
+import { env } from '@/env.js'
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization
@@ -17,7 +18,7 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
     throw new ApiError('INVALID_TOKEN', 401)
   }
 
-  const accessSecret = process.env.JWT_ACCESS_SECRET!
+  const accessSecret = env.JWT_ACCESS_SECRET
 
   try {
     const payload = jwt.verify(token, accessSecret)
@@ -50,7 +51,7 @@ export async function verifyRefreshToken(req: Request, res: Response, next: Next
       throw new ApiError('INVALID_TOKEN', 401)
     }
 
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!)
+    const payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET)
 
     if (typeof payload === 'string' || typeof payload.userId !== 'string') {
       throw new ApiError('INVALID_TOKEN', 401)
