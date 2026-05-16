@@ -1,16 +1,16 @@
 import { Router, type Request, type Response } from 'express'
-import { withErrorHandler } from '../error-handler.js'
-import { verifySupplier } from '../middleware/suppliers.js'
-import { removeUndefinedFields, validateRequest } from '../utils/index.js'
+import { withErrorHandler } from '@/error-handler.js'
+import { verifySupplier } from '@/middleware/suppliers.js'
+import { removeUndefinedFields, validateRequest } from '@/utils/index.js'
 import {
   createProductSchema,
   getProductsQuerySchema,
   productIdParamsSchema,
   updateProductSchema
-} from '../zod-schemas/products.js'
-import { ProductsRepository } from '../db/repository.js'
-import { ApiError } from '../errors.js'
-import type { ProductFilters } from '../types/index.js'
+} from '@/zod-schemas/products.js'
+import { ProductsRepository } from '@/db/repository.js'
+import { ApiError } from '@/errors.js'
+import type { ProductFilters } from '@/types/index.js'
 
 export const productsRouter: Router = Router()
 

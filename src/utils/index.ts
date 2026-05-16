@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 import type { ZodType } from 'zod'
-import { ApiError } from '../errors.js'
+import { ApiError } from '@/errors.js'
 
 export function hashSha256(str: string) {
   return crypto.createHash('sha256').update(str).digest('hex')

@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express'
-import { withErrorHandler } from '../error-handler.js'
-import { ApiError } from '../errors.js'
-import { verifyAccessToken } from '../middleware/auth.js'
+import { withErrorHandler } from '@/error-handler.js'
+import { ApiError } from '@/errors.js'
+import { verifyAccessToken } from '@/middleware/auth.js'
 
 export const testRouter: Router = Router()
 

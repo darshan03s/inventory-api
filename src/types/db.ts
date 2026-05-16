@@ -1,5 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm'
-import type { products, refreshTokens, suppliers, users } from '../db/schema.js'
+import type { products, refreshTokens, suppliers, users } from '@/db/schema.js'
 
 export type User = InferSelectModel<typeof users>
 

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
-import { SuppliersRepository } from '../db/repository.js'
-import { ApiError } from '../errors.js'
+import { SuppliersRepository } from '@/db/repository.js'
+import { ApiError } from '@/errors.js'
 
 export async function verifySupplier(req: Request, res: Response, next: NextFunction) {
   const userId = req.userId!

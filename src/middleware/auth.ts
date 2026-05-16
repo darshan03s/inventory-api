@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { ApiError } from '../errors.js'
-import { RefreshTokenRepository } from '../db/repository.js'
-import { hashSha256 } from '../utils/index.js'
+import { ApiError } from '@/errors.js'
+import { RefreshTokenRepository } from '@/db/repository.js'
+import { hashSha256 } from '@/utils/index.js'
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization

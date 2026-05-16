@@ -1,13 +1,13 @@
 import { Router, type Request, type Response } from 'express'
-import { withErrorHandler } from '../error-handler.js'
-import { loginSchema, registerSchema } from '../zod-schemas/auth.js'
-import type { JwtPayloadData } from '../types/index.js'
-import { ApiError } from '../errors.js'
-import { RefreshTokenRepository, UsersRepository } from '../db/repository.js'
+import { withErrorHandler } from '@/error-handler.js'
+import { loginSchema, registerSchema } from '@/zod-schemas/auth.js'
+import type { JwtPayloadData } from '@/types/index.js'
+import { ApiError } from '@/errors.js'
+import { RefreshTokenRepository, UsersRepository } from '@/db/repository.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { verifyAccessToken, verifyRefreshToken } from '../middleware/auth.js'
-import { hashSha256, validateRequest } from '../utils/index.js'
+import { verifyAccessToken, verifyRefreshToken } from '@/middleware/auth.js'
+import { hashSha256, validateRequest } from '@/utils/index.js'
 
 export const authRouter: Router = Router()
 
