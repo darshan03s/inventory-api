@@ -153,7 +153,7 @@ export const ProductsRepository = {
     const [product] = await db
       .select()
       .from(products)
-      .where(and(eq(products.id, id), eq(suppliers.id, supplierId)))
+      .where(and(eq(products.id, id), eq(products.supplierId, supplierId)))
       .limit(1)
 
     return product
