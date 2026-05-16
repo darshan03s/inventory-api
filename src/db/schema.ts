@@ -33,8 +33,6 @@ export const refreshTokens = pgTable('refresh_tokens', {
 
   token: text().notNull().unique(),
 
-  expiresAt: timestamp({ withTimezone: true }).notNull(),
-
   createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
 
   updatedAt: timestamp({ withTimezone: true })

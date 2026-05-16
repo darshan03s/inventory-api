@@ -33,18 +33,35 @@ export const productIdParamsSchema = z.object({
   id: z.uuid('INVALID_PRODUCT_ID')
 })
 
-export const getProductsQuerySchema = z.object({
-  search: z.string().trim().min(1).optional(),
+export const getProductsQuerySchema = z
+  .object({
+    search: z.string().trim().min(1).optional(),
 
-  sku: z.string().trim().toUpperCase().optional(),
+    sku: z.string().trim().toUpperCase().optional(),
 
-  minPrice: z.coerce.number().int('INVALID_MIN_PRICE').nonnegative('INVALID_MIN_PRICE').optional(),
+    minPrice: z.coerce
+      .number()
+      .int('INVALID_MIN_PRICE')
+      .nonnegative('INVALID_MIN_PRICE')
+      .optional(),
 
-  maxPrice: z.coerce.number().int('INVALID_MAX_PRICE').nonnegative('INVALID_MAX_PRICE').optional(),
+    maxPrice: z.coerce
+      .number()
+      .int('INVALID_MAX_PRICE')
+      .nonnegative('INVALID_MAX_PRICE')
+      .optional(),
 
-  inStock: z.coerce.boolean().optional(),
+    inStock: z.coerce.boolean().optional(),
 
-  page: z.coerce.number().int().positive().default(1),
+    page: z.coerce.number().int().positive().default(1),
 
-  limit: z.coerce.number().int().positive().max(100).default(20)
-})
+    limit: z.coerce.number().int().positive().max(100).default(20)
+  })
+  .refine(
+    (data) =>
+      data.minPrice === undefined || data.maxPrice === undefined || data.minPrice <= data.maxPrice,
+    {
+      message: 'INVALID_PRICE_RANGE',
+      path: ['maxPrice']
+    }
+  )

@@ -14,6 +14,12 @@ suppliersRouter.post(
 
     const userId = req.userId!
 
+    const existingSupplier = await SuppliersRepository.getByUserId(userId)
+
+    if (existingSupplier) {
+      throw new ApiError('SUPPLIER_ALREADY_EXISTS', 409)
+    }
+
     const supplier = await SuppliersRepository.create({ ...validatedSupplier, userId })
 
     return res.status(201).json({

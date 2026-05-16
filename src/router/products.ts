@@ -62,6 +62,10 @@ productsRouter.patch(
 
     const updateData = removeUndefinedFields(validatedBody)
 
+    if (Object.keys(updateData).length === 0) {
+      throw new ApiError('AT_LEAST_ONE_FIELD_REQUIRED', 400)
+    }
+
     const updatedProduct = await ProductsRepository.updateById(validatedParams.id, updateData)
 
     if (!updatedProduct) {
@@ -117,7 +121,10 @@ productsRouter.get(
   withErrorHandler(async (req: Request, res: Response) => {
     const validatedParams = validateRequest(req.params, productIdParamsSchema)
 
-    const product = await ProductsRepository.getById(validatedParams.id)
+    const product = await ProductsRepository.getByIdAndSupplierId(
+      validatedParams.id,
+      req.supplierId!
+    )
 
     if (!product) {
       throw new ApiError('PRODUCT_NOT_FOUND', 404)

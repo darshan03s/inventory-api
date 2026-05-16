@@ -95,8 +95,7 @@ authRouter.post(
 
     await RefreshTokenRepository.create({
       userId: existingUser.id,
-      token: hashedRefreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
+      token: hashedRefreshToken
     })
 
     setRefreshTokenCookie(refreshToken, res)
@@ -136,12 +135,7 @@ authRouter.post(
     const oldRefreshTokenHash = hashSha256(oldRefreshToken)
     const newRefreshTokenHash = hashSha256(newRefreshToken)
 
-    await RefreshTokenRepository.rotate(
-      oldRefreshTokenHash,
-      newRefreshTokenHash,
-      userId,
-      new Date(Date.now() + REFRESH_TOKEN_MAX_AGE)
-    )
+    await RefreshTokenRepository.rotate(oldRefreshTokenHash, newRefreshTokenHash, userId)
 
     setRefreshTokenCookie(newRefreshToken, res)
 
@@ -162,9 +156,11 @@ authRouter.post(
 
     const refreshTokenHash = hashSha256(refreshToken)
 
-    await RefreshTokenRepository.deleteByToken(refreshTokenHash)
-
-    clearRefreshTokenCookie(res)
+    try {
+      await RefreshTokenRepository.deleteByToken(refreshTokenHash)
+    } finally {
+      clearRefreshTokenCookie(res)
+    }
 
     return res.sendStatus(204)
   })

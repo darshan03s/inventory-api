@@ -57,6 +57,13 @@
       "when": 1778851650217,
       "tag": "0007_update_products_index",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1778919132814,
+      "tag": "0008_remove_refresh_tokens_expires_at",
+      "breakpoints": true
     }
   ]
 }

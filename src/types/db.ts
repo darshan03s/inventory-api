@@ -9,7 +9,7 @@ export type UpdateUserData = Partial<CreateUserData>
 
 export type RefreshToken = InferSelectModel<typeof refreshTokens>
 
-export type CreateRefreshTokenData = Pick<RefreshToken, 'userId' | 'token' | 'expiresAt'>
+export type CreateRefreshTokenData = Pick<RefreshToken, 'userId' | 'token'>
 
 export type Supplier = InferSelectModel<typeof suppliers>
 

@@ -106,19 +106,13 @@ export const RefreshTokenRepository = {
     return db.delete(refreshTokens).where(eq(refreshTokens.userId, userId))
   },
 
-  rotate: async (
-    oldRefreshToken: string,
-    newRefreshToken: string,
-    userId: string,
-    expiresAt: Date
-  ) => {
+  rotate: async (oldRefreshToken: string, newRefreshToken: string, userId: string) => {
     await db.transaction(async (tx) => {
       await tx.delete(refreshTokens).where(eq(refreshTokens.token, oldRefreshToken))
 
       await tx.insert(refreshTokens).values({
         userId,
-        token: newRefreshToken,
-        expiresAt
+        token: newRefreshToken
       })
     })
   }
@@ -151,6 +145,16 @@ export const ProductsRepository = {
 
   getById: async (id: string) => {
     const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1)
+
+    return product
+  },
+
+  getByIdAndSupplierId: async (id: string, supplierId: string) => {
+    const [product] = await db
+      .select()
+      .from(products)
+      .where(and(eq(products.id, id), eq(suppliers.id, supplierId)))
+      .limit(1)
 
     return product
   },
