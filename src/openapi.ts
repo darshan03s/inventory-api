@@ -1,12 +1,15 @@
 import { createDocument } from 'zod-openapi'
 import { loginSchema, registerSchema } from '@/zod-schemas/auth.js'
+import { createSupplierSchema } from '@/zod-schemas/suppliers.js'
 import pkg from '../package.json' with { type: 'json' }
 import { env } from './env.js'
 import {
   codeResponseSchema,
   authLoginResponseSchema,
   authMeResponseSchema,
-  authRefreshResponseSchema
+  authRefreshResponseSchema,
+  createSupplierResponseSchema,
+  getSupplierResponseSchema
 } from './zod-schemas/responses.js'
 
 export const openApiDocument: ReturnType<typeof createDocument> = createDocument({
@@ -264,6 +267,152 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
 
                 example: {
                   code: 'USER_NOT_FOUND'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    '/api/suppliers': {
+      post: {
+        tags: ['Suppliers'],
+        summary: 'Create supplier',
+        operationId: 'createSupplier',
+        security: [
+          {
+            bearerAuth: []
+          }
+        ],
+
+        requestBody: {
+          required: true,
+
+          content: {
+            'application/json': {
+              schema: createSupplierSchema
+            }
+          }
+        },
+
+        responses: {
+          '201': {
+            description: 'Supplier created successfully',
+            content: {
+              'application/json': {
+                schema: createSupplierResponseSchema,
+
+                example: {
+                  code: 'SUPPLIER_CREATED',
+                  supplier: {
+                    id: '0506994f-870a-4f26-8109-1c88a782ebef',
+                    userId: 'c865bdde-f5ea-4040-a8d5-ad1526ab953f',
+                    phone: '9876543210',
+                    companyName: 'LG',
+                    createdAt: '2026-05-16T08:23:26.502Z',
+                    updatedAt: '2026-05-16T08:23:26.502Z'
+                  }
+                }
+              }
+            }
+          },
+
+          '400': {
+            description: 'Invalid request body',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_REQUEST_BODY'
+                }
+              }
+            }
+          },
+
+          '401': {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_TOKEN'
+                }
+              }
+            }
+          },
+
+          '409': {
+            description: 'Supplier already exists',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'SUPPLIER_ALREADY_EXISTS'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    '/api/suppliers/me': {
+      get: {
+        tags: ['Suppliers'],
+        summary: 'Get current supplier',
+        operationId: 'getCurrentSupplier',
+        security: [
+          {
+            bearerAuth: []
+          }
+        ],
+
+        responses: {
+          '200': {
+            description: 'Current supplier retrieved successfully',
+            content: {
+              'application/json': {
+                schema: getSupplierResponseSchema,
+
+                example: {
+                  supplier: {
+                    id: '0506994f-870a-4f26-8109-1c88a782ebef',
+                    userId: 'c865bdde-f5ea-4040-a8d5-ad1526ab953f',
+                    phone: '9876543210',
+                    companyName: 'LG',
+                    createdAt: '2026-05-16T08:23:26.502Z',
+                    updatedAt: '2026-05-16T08:23:26.502Z'
+                  }
+                }
+              }
+            }
+          },
+
+          '401': {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_TOKEN'
+                }
+              }
+            }
+          },
+
+          '404': {
+            description: 'Supplier not found',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'SUPPLIER_NOT_FOUND'
                 }
               }
             }

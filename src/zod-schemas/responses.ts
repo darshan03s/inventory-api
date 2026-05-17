@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { supplierSchema } from './suppliers.js'
 
 export const codeResponseSchema = z.object({
   code: z.string()
@@ -30,4 +31,13 @@ export const authMeResponseSchema = z.object({
       companyName: z.string()
     })
     .nullable()
+})
+
+export const createSupplierResponseSchema = z.object({
+  code: z.string(),
+  supplier: supplierSchema
+})
+
+export const getSupplierResponseSchema = z.object({
+  supplier: supplierSchema
 })
