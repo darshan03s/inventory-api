@@ -65,3 +65,15 @@ export const getProductsQuerySchema = z
       path: ['maxPrice']
     }
   )
+
+export const productSchema = z.object({
+  id: z.string(),
+  supplierId: z.string(),
+  name: z.string(),
+  description: z.string(),
+  sku: z.string(),
+  price: z.number().int(),
+  stockQuantity: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date()
+})
