@@ -2,6 +2,12 @@ import { createDocument } from 'zod-openapi'
 import { loginSchema, registerSchema } from '@/zod-schemas/auth.js'
 import pkg from '../package.json' with { type: 'json' }
 import { env } from './env.js'
+import {
+  codeResponseSchema,
+  authLoginResponseSchema,
+  authMeResponseSchema,
+  authRefreshResponseSchema
+} from './zod-schemas/responses.js'
 
 export const openApiDocument: ReturnType<typeof createDocument> = createDocument({
   openapi: '3.1.0',
@@ -47,19 +53,42 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
 
         responses: {
           '201': {
-            description: 'User registered successfully'
+            description: 'User registered successfully',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'USER_REGISTERED'
+                }
+              }
+            }
           },
 
           '400': {
-            description: 'Invalid request body'
+            description: 'Invalid request body',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_REQUEST_BODY'
+                }
+              }
+            }
           },
 
           '409': {
-            description: 'User with email already exists'
-          },
+            description: 'User with email already exists',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
 
-          '500': {
-            description: 'Internal server error'
+                example: {
+                  code: 'RESOURCE_ALREADY_EXISTS'
+                }
+              }
+            }
           }
         }
       }
@@ -83,19 +112,47 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
 
         responses: {
           '200': {
-            description: 'User logged in successfully'
+            description: 'User logged in successfully',
+            content: {
+              'application/json': {
+                schema: authLoginResponseSchema,
+
+                example: {
+                  accessToken: 'jwt-access-token',
+                  user: {
+                    name: 'John Doe',
+                    email: 'johndoe@email.com',
+                    createdAt: '2026-05-16T08:23:26.502Z'
+                  }
+                }
+              }
+            }
           },
 
           '400': {
-            description: 'Invalid request body'
+            description: 'Invalid request body',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_REQUEST_BODY'
+                }
+              }
+            }
           },
 
           '401': {
-            description: 'Invalid credentials'
-          },
+            description: 'Invalid credentials',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
 
-          '500': {
-            description: 'Internal server error'
+                example: {
+                  code: 'INVALID_CREDENTIALS'
+                }
+              }
+            }
           }
         }
       }
@@ -109,15 +166,29 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
 
         responses: {
           '200': {
-            description: 'Access token refreshed successfully'
+            description: 'Refresh access token using refreshToken cookie',
+            content: {
+              'application/json': {
+                schema: authRefreshResponseSchema,
+
+                example: {
+                  accessToken: 'jwt-access-token'
+                }
+              }
+            }
           },
 
           '401': {
-            description: 'Invalid refresh token'
-          },
+            description: 'Invalid refresh token',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
 
-          '500': {
-            description: 'Internal server error'
+                example: {
+                  code: 'INVALID_TOKEN'
+                }
+              }
+            }
           }
         }
       }
@@ -132,10 +203,6 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
         responses: {
           '204': {
             description: 'User logged out successfully'
-          },
-
-          '500': {
-            description: 'Internal server error'
           }
         }
       }
@@ -154,19 +221,52 @@ export const openApiDocument: ReturnType<typeof createDocument> = createDocument
 
         responses: {
           '200': {
-            description: 'Current user retrieved successfully'
+            description: 'Current user retrieved successfully',
+            content: {
+              'application/json': {
+                schema: authMeResponseSchema,
+
+                example: {
+                  user: {
+                    id: 'c865bdde-f5ea-4040-a8d5-ad1526ab953f',
+                    name: 'John Doe',
+                    email: 'johndoe@email.com',
+                    createdAt: '2026-05-16T08:23:26.502Z',
+                    updatedAt: '2026-05-16T08:23:26.502Z',
+                    supplier: {
+                      id: '0506994f-870a-4f26-8109-1c88a782ebef',
+                      companyName: 'LG'
+                    }
+                  }
+                }
+              }
+            }
           },
 
           '401': {
-            description: 'Unauthorized'
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
+
+                example: {
+                  code: 'INVALID_TOKEN'
+                }
+              }
+            }
           },
 
           '404': {
-            description: 'User not found'
-          },
+            description: 'User not found',
+            content: {
+              'application/json': {
+                schema: codeResponseSchema,
 
-          '500': {
-            description: 'Internal server error'
+                example: {
+                  code: 'USER_NOT_FOUND'
+                }
+              }
+            }
           }
         }
       }
