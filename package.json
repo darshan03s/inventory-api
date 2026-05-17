@@ -10,9 +10,10 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "prepare": "husky",
-    "db:push": "pnpm drizzle-kit push",
     "db:generate": "pnpm drizzle-kit generate",
-    "db:migrate": "pnpm drizzle-kit migrate"
+    "db:migrate": "pnpm drizzle-kit migrate",
+    "db:migrate:docker": "docker compose exec api pnpm db:migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css,md,html,mjs}": "prettier --write"
