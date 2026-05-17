@@ -7,6 +7,8 @@ export const env = createEnv({
 
     PORT: z.coerce.number().default(3000),
 
+    BASE_URL: z.url(),
+
     DATABASE_URL: z.url(),
 
     JWT_ACCESS_SECRET: z.string().min(32),

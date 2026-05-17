@@ -12,6 +12,8 @@ import { suppliersRouter } from './router/suppliers.js'
 import { verifyAccessToken } from './middleware/auth.js'
 import { productsRouter } from './router/products.js'
 import { env } from './env.js'
+import { openApiDocument } from './openapi.js'
+import { apiReference } from '@scalar/express-api-reference'
 
 const app = express()
 
@@ -28,6 +30,17 @@ app.use(
 )
 app.use(morgan('dev'))
 app.use(cookieParser())
+
+app.get('/openapi.json', (req, res) => {
+  return res.json(openApiDocument)
+})
+
+app.use(
+  '/docs',
+  apiReference({
+    content: openApiDocument
+  })
+)
 
 app.get('/', (req, res) => {
   res.json({ status: 'ok' })
