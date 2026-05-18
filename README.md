@@ -6,6 +6,8 @@ This project demonstrates authentication, supplier management, product managemen
 
 ---
 
+![Preview](./public/preview.png)
+
 # Description
 
 Inventory API allows suppliers to manage their own products securely using JWT authentication.
