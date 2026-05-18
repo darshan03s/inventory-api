@@ -43,7 +43,7 @@ app.use(
 )
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok' })
+  res.send('This is Inventory API.Visit /docs to see API docs')
 })
 
 app.use('/health', healthRouter)
